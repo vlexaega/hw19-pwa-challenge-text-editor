@@ -2,8 +2,8 @@
   "name": "jate",
   "scripts": {
     "dev": "webpack-dev-server --open",
-    "build": "webpack --mode production",
-    "start": "webpack --watch"
+    "build": "webpack",
+    "start": "webpack && webpack server"
   },
   "author": "2U",
   "license": "UNLICENSED",
