@@ -1,4 +1,6 @@
 import { openDB } from 'idb';
+//import the UUID generator
+import { v4 as uuidv4 } from 'uuid';
 
 const initdb = async () =>
   openDB('jate', 1, {
@@ -18,7 +20,11 @@ export const putDb = async(content) => {
   const jateDb = await openDB('jate', 1);
   const tx = jateDb.transaction('jate', 'readwrite');
   const store = tx.objectStore('jate');
-  const request = store.put({ id:1, value:content });
+  const item = {
+    id: uuidv4(),
+    value: content,
+  };
+  const request = store.put(item);
   const result = await request;
   console.log('Data saved to the database', result);
 };
@@ -29,7 +35,7 @@ export const getDb = async () => {
   const jateDb = await openDB('jate', 1);
   const tx = jateDb.transaction('jate', 'readonly');
   const store = tx.objectStore('jate');
-  const request = store.get(1);
+  const request = store.getAll();
   const result = await request;
   console.log('result.value', result);
   return result;
