@@ -15,7 +15,7 @@ module.exports = () => {
       install: './src/js/install.js',
       header: './src/js/header.js',
       editor: './src/js/editor.js',
-      // database: './src/js/database.js'
+      database: './src/js/database.js'
     },
     output: {
       filename: '[name].bundle.js',
