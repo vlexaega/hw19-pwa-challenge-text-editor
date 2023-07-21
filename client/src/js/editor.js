@@ -1,5 +1,5 @@
 // Import methods to save and get data from the indexedDB database in './database.js'
-import { getDb, putDb } from './database.js';
+import { getDb, putDb, initdb } from './database.js';
 import { header } from './header.js';
 
 export default class Editor {
@@ -24,23 +24,25 @@ export default class Editor {
 
     // When the editor is ready, set the value to whatever is stored in indexeddb.
     // Fall back to localStorage if nothing is stored in indexeddb, and if neither is available, set the value to header.
-    getDb()
-    .then((data) => {
-      if (data) {
-        console.info('Loaded data from IndexedDB, injecting into editor');
-        this.editor.setValue(data);
-      } else if (localStorage.getItem('content')) {
-        console.info('Loaded data from localStorage, injecting into editor');
-        this.editor.setValue(localStorage.getItem('content'));
-      } else {
-        console.info('No data found in IndexedDB or localStorage, using header as fallback');
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        await initdb(); // Make sure the database is initialized
+        const data = await getDb();
+        if (data && data.length > 0) {
+          console.info('Loaded data from IndexedDB, injecting into editor');
+          this.editor.setValue(data[0].value);
+        } else if (localStorage.getItem('content')) {
+          console.info('Loaded data from localStorage, injecting into editor');
+          this.editor.setValue(localStorage.getItem('content'));
+        } else {
+          console.info('No data found in IndexedDB or localStorage, using header as fallback');
+          this.editor.setValue(header);
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+        // If there's an error loading data from IndexedDB or localStorage, use the header as fallback
         this.editor.setValue(header);
       }
-    })
-    .catch((error) => {
-      console.error('Error loading data:', error);
-      // If there's an error loading data from IndexedDB or localStorage, use the header as fallback
-      this.editor.setValue(header);
     });
 
     // Save the content of the editor when the editor itself is loses focus
